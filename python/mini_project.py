@@ -1,27 +1,76 @@
-#### RENAME from mini_project.py to (your_project_short_name).py
-# File structure
-# 1. Commented paragraph describing mini-project ~ 100-200 words
-# 2. Module imports that are used in multiple functions
-# 3. Function definitions
-# 4. if __name__ == "__main__" block, which calls a primary function with a clear name 
-
-# All code is inside function definitions for simulation solution & visualization (functional programming)
-#	Each function contains a docstring compliant with PEP 257: https://www.python.org/dev/peps/pep-0257/
-#	Module ends with if __name__ == "__main__" block to execute central function of the code
-
-# Primary simulation function structure
-#	1. Module imports
-#		Use SciPy constants for physical constants in particular function (not globally)
-#			https://docs.scipy.org/doc/scipy/reference/constants.html
-#		Follow best practice order: 
-#			https://docs.python.org/3/faq/programming.html#what-are-the-best-practices-for-using-import-in-a-module
-# 	2. Simulation parameters
-#		Each parameter named clearly and units marked in in-line comment
-#		Naming of all variables should comply with PEP 8: 
-#			https://www.python.org/dev/peps/pep-0008/#documentation-strings
-#			(lower_case_with_underscores)
-# 	3. Computed parameters (from simulation parameters)
-# 	4. Function calls (use PEP 8-compliant lower_case_with_underscores) and simple calculations for:
-#		data read-in
-#		simulation solution 
-#		visualization
+# Import required packages
+import matplotlib.pyplot as plt
+import numpy as np
+import sympy as sp
+# Begin by establishing empty lists for the points
+x = []
+y = []
+n = 0
+# Get critical value for number of points to be used in calculation
+numberofpoints = int((input('How many data points? ')))
+# Append previously empty lists with data points to be used
+while n < numberofpoints:
+    x.append(float(input('Input point x value: ')))
+    y.append(float(input('Input point y value: ')))
+    n = n + 1
+# Reset n just in case after loop for point input concludes
+n = 0
+# Print values to show process functions as intended
+print('X values: ')
+print(x)
+print('Y values: ')
+print(y)
+# Plot, hopefully
+plt.scatter(x, y)
+# With custom user specified labels
+xlabel = input('X label? ')
+plt.xlabel = xlabel
+ylabel = input('Y label? ')
+plt.ylabel = ylabel
+title = input('Graph title? ')
+plt.title = title
+plt.show()
+# Graph should show up w points plotted on it
+# Next step is the hard bit:
+# getting the program to figure out the rate of change of the data and use it to create a line of best fit
+# Starting by defining simple variables
+deltax = 0
+deltay = 0
+slopes = []
+pointsminusone = numberofpoints - 1
+slopeindex = []
+# for list purposes
+while n < pointsminusone:
+    deltax = x[n+1]-x[n]
+    deltay = y[n+1]-y[n]
+    tempslope = deltay/deltax
+    slopes.append(tempslope)
+    slopeindex.append(n)
+    n += 1
+# Once again, to please the machine spirit
+n = 0
+print('Slopes:')
+print(slopes)
+m, b = np.polyfit(slopeindex, slopes, 1)
+g = sp.Symbol('X')
+print(m)
+print(b)
+lineofbestfit = sp.integrate(m*g+b, g)
+lineofbestfit = str(lineofbestfit)
+print(lineofbestfit)
+print(type(lineofbestfit))
+plotfit = []
+# Calculate points from projected line of best fit
+for n in x:
+    midpoint = lineofbestfit.replace('X', str(n))
+    print(midpoint)
+    midpoint = eval(midpoint)
+    print(midpoint)
+    plotfit.append(midpoint)
+print('Projected points.')
+print(plotfit)
+plt.plot(plotfit, x, linestyle='solid')
+plt.xlabel = xlabel
+plt.ylabel = ylabel
+plt.title = title
+plt.show()
